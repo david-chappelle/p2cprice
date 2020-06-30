@@ -14,10 +14,10 @@ namespace p2cprice
 			var outputFile = args.Length > 0 ? args[0] : @"C:\users\david\downloads\p2c.csv";
 
 			_funds = new Dictionary<string, string>();
-			_funds["Conservative Allocation Portfolio"] = "";
-			_funds["Balanced Allocation Portfolio"] = "";
-			_funds["High Equity Allocation Portfolio"] = "";
-			_funds["100% Fixed-Income Portfolio"] = "";
+			_funds["Conservative Allocation Portfolio"] = "P2C8515";
+			_funds["Balanced Allocation Portfolio"] = "P2C8512";
+			_funds["High Equity Allocation Portfolio"] = "P2C8516";
+			_funds["100% Fixed-Income Portfolio"] = "P2C8513";
 			_funds["U.S. Equity Index Portfolio"] = "P2C8511";
 
 			try
