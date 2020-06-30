@@ -44,7 +44,12 @@ namespace p2cprice
 			var dateNode = tableNode.SelectSingleNode("thead/tr/th[2]");
 			var dateText = dateNode.InnerText;
 
-			if (!DateTime.TryParseExact(dateText, "Uni\\t Value a\\s o\\f MMMM dd, yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime quoteDate))
+			// remove non-date part
+			if (!string.IsNullOrEmpty(dateText))
+				dateText = dateText.Replace("Unit Value as of ", "");
+
+			// parse the scraped date
+			if (!DateTime.TryParseExact(dateText, "MMMM dd, yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime quoteDate))
 				quoteDate = DateTime.Today;
 
 			foreach (var rowNode in tableNode.SelectNodes("tbody/tr"))
