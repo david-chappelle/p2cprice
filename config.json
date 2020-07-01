@@ -1,0 +1,25 @@
+{
+  "url": "https://www.path2college529.com/research/daily.shtml",
+  "funds": [
+    {
+      "name": "Conservative Allocation Portfolio",
+      "ticker": "P2C8515"
+    },
+    {
+      "name": "Balanced Allocation Portfolio",
+      "ticker": "P2C8512"
+    },
+    {
+      "name": "High Equity Allocation Portfolio",
+      "ticker": "P2C8516"
+    },
+    {
+      "name": "100% Fixed-Income Portfolio",
+      "ticker": "P2C8513"
+    },
+    {
+      "name": "U.S. Equity Index Portfolio",
+      "ticker": "P2C8511"
+    }
+  ]
+}

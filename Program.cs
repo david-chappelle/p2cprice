@@ -1,70 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
 
 namespace p2cprice
 {
 	class Program
 	{
-		static async Task Main(string[] args)
+		static async Task<int> Main(string[] args)
 		{
-			var url = "https://www.path2college529.com/research/daily.shtml";
-			var outputFile = args.Length > 0 ? args[0] : @"C:\users\david\downloads\p2c.csv";
-
-			_funds = new Dictionary<string, string>();
-			_funds["Conservative Allocation Portfolio"] = "P2C8515";
-			_funds["Balanced Allocation Portfolio"] = "P2C8512";
-			_funds["High Equity Allocation Portfolio"] = "P2C8516";
-			_funds["100% Fixed-Income Portfolio"] = "P2C8513";
-			_funds["U.S. Equity Index Portfolio"] = "P2C8511";
-
 			try
 			{
+				var downloader = new QuoteDownloader();
+				downloader.LoadConfig();
+
+				var outputFile = args.Length > 0 ? args[0] : @"C:\users\david\downloads\p2c.csv";
+				var quotes = await downloader.GetTodaysQuotes();
+
 				using (var writer = File.CreateText(outputFile))
-					await downloadQuotes(url, writer);
+				{
+					foreach (var quote in quotes)
+					{
+						// write to csv file
+						writer.WriteLine("{0},{1:MM/dd/yy},{2:0.00}", quote.Ticker, quote.Date, quote.Price);
+					}
+				}
 			}
 			catch (Exception ex)
 			{
 				Console.Error.WriteLine(ex.ToString());
+				return 1;
 			}
+
+			return 0;
 		}
-
-		static async Task downloadQuotes(string url, TextWriter writer)
-		{
-			var web = new HtmlWeb();
-			var doc = await web.LoadFromWebAsync(url);
-
-			var staticInvestmentPortfolioNode = doc.DocumentNode.SelectSingleNode("//div[@class='panel-title' and text() = 'Static Investment Portfolios']");
-			if (staticInvestmentPortfolioNode == null)
-				return;
-
-			var tableNode = staticInvestmentPortfolioNode.SelectSingleNode("../..//table");
-			var dateNode = tableNode.SelectSingleNode("thead/tr/th[2]");
-			var dateText = dateNode.InnerText;
-
-			// remove non-date part
-			if (!string.IsNullOrEmpty(dateText))
-				dateText = dateText.Replace("Unit Value as of ", "");
-
-			// parse the scraped date
-			if (!DateTime.TryParseExact(dateText, "MMMM dd, yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime quoteDate))
-				quoteDate = DateTime.Today;
-
-			foreach (var rowNode in tableNode.SelectNodes("tbody/tr"))
-			{
-				var name = rowNode.SelectSingleNode("td[1]").InnerText;
-				var ticker = _funds[name];
-				if (string.IsNullOrEmpty(ticker))
-					continue;
-
-				var price = rowNode.SelectSingleNode("td[2]").InnerText.Replace("$", "");
-
-				writer.WriteLine("{0},{1:MM/dd/yy},{2}", ticker, quoteDate, price);
-			}
-		}
-
-		private static Dictionary<string, string> _funds = null;
 	}
 }
