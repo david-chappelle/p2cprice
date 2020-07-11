@@ -43,7 +43,7 @@ namespace p2cprice
 				dateText = dateText.Replace("Unit Value as of ", "");
 
 			// if the date is parseable, parse it, otherwise use today's date
-			if (!DateTime.TryParseExact(dateText, "MMMM dd, yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime quoteDate))
+			if (!DateTime.TryParseExact(dateText, "MMMM d, yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime quoteDate))
 				quoteDate = DateTime.Today;
 
 			var quotes = new List<FundQuote>();
