@@ -43,7 +43,8 @@ namespace p2cprice
 				dateText = dateText.Replace("Unit Value as of ", "");
 
 			// if the date is parseable, parse it, otherwise use today's date
-			if (!DateTime.TryParseExact(dateText, "MMMM d, yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime quoteDate))
+			var quoteDate = DateTime.MinValue;
+			if (!DateTime.TryParseExact(dateText, "MMMM d, yyyy", null, System.Globalization.DateTimeStyles.None, out quoteDate))
 				quoteDate = DateTime.Today;
 
 			var quotes = new List<FundQuote>();
@@ -70,10 +71,16 @@ namespace p2cprice
 
 				var price = rowNode.SelectSingleNode("td[2]").InnerText.Replace("$", "");
 				fundQuote.Price = double.Parse(price);
-				fundQuote.UsdChange = double.Parse(rowNode.SelectSingleNode("td[3]/div[2]").InnerText);
-				fundQuote.PercentChange = double.Parse(rowNode.SelectSingleNode("td[4]").InnerText.Replace("%",""));
-				quotes.Add(fundQuote);
 
+				var usdChangeNode = rowNode.SelectSingleNode("td[3]/div[2]") ?? rowNode.SelectSingleNode("td[3]/span[1]");
+				if (usdChangeNode != null && double.TryParse(usdChangeNode.InnerText, out double usdChange))
+					fundQuote.UsdChange = usdChange;
+
+				var percentChangeNode = rowNode.SelectSingleNode("td[4]");
+				if (percentChangeNode != null && double.TryParse(percentChangeNode.InnerText.Replace("%", ""), out double percentChange))
+					fundQuote.PercentChange = percentChange;
+
+				quotes.Add(fundQuote);
 			}
 
 			return quotes.ToArray();
